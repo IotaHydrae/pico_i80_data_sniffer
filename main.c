@@ -53,6 +53,7 @@ static inline void pio_i80_input_rd8(PIO pio, uint sm, void *buf, size_t len)
 {
 	dma_channel_configure(dma_rx, &c, (uint8_t *)buf, &pio->rxf[sm], len,
 			      true);
+	dma_channel_wait_for_finish_blocking(dma_rx);
 }
 
 #define CPU_SPEED_MHZ 240
@@ -90,13 +91,13 @@ int main()
 	printf("\nPreset Tx Data:\n");
 	hexdump(txbuf, sizeof(txbuf));
 
-	// for (int i = 0; i < 5; i++) {
-	// 	printf("try %d\n", i);
-	memset(rd_buf, 0x00, sizeof(rd_buf));
-	pio_i80_input_rd8(pio, sm, rd_buf, sizeof(rd_buf));
-	// hexdump(rd_buf, 16);
-	analyzer_i80_8bit_video_sync(rd_buf, sizeof(rd_buf));
-	// }
+	for (int i = 0; i < 5; i++) {
+		printf("try %d\n", i);
+		memset(rd_buf, 0x00, sizeof(rd_buf));
+		pio_i80_input_rd8(pio, sm, rd_buf, sizeof(rd_buf));
+		// hexdump(rd_buf, 16);
+		analyzer_i80_8bit_video_sync(rd_buf, sizeof(rd_buf));
+	}
 
 	puts("Done.");
 
